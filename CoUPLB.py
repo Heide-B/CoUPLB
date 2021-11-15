@@ -59,7 +59,7 @@ def rerun():
 
 #Image loader
 def images(pet,col1):
-    path = '.\\Photos\\'    
+    path = './Photos/'    
     for i in os.listdir(path):
         if i.startswith(str(pet)) and i.endswith('jpg'):
             img = path+i
