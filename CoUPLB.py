@@ -8,7 +8,7 @@ import os
 
 #### DB
 def init_connection():
-    DATABASE_URL = os.environ['postgres://jibaawydoqcjea:b2157a3a116469b456eb6bb1f3ae56919616e5f92b4807456ea6c58bed304153@ec2-34-203-182-172.compute-1.amazonaws.com:5432/deol40kjpsltas']
+    DATABASE_URL = os.environ['DATABASE_URL']
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 def checking():
