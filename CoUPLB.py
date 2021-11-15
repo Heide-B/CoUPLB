@@ -2,9 +2,44 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from csv import DictWriter
+import psycopg2
 import base64
 import os
 
+#### DB
+def init_connection():
+    DATABASE_URL = os.environ['postgres://jibaawydoqcjea:b2157a3a116469b456eb6bb1f3ae56919616e5f92b4807456ea6c58bed304153@ec2-34-203-182-172.compute-1.amazonaws.com:5432/deol40kjpsltas']
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
+
+def checking():
+    with conn.cursor() as cur:
+        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE';")
+        rows = cur.rowcount
+        res = cur.fetchall()
+        print(rows)
+        print(res)
+        if rows >= 9990:
+            try:
+                current_table = res[-1][-1]
+                x = current_table
+                i = x.split("_")
+                new_table = i[0]+'_'+str(int(i[-1]) + 1)
+                cur.execute(
+                """CREATE TABLE public.{0} (
+                "Timestamp" date NOT NULL, -- Date of the recorded feeding
+                "Name" varchar NOT NULL, -- Name of the animal being recorded
+                attendance varchar NOT NULL, -- Absent, Present, Fostered
+                status varchar NOT NULL, -- Healthy, Injured, Sick
+                feeder varchar NULL, -- Feeder assigned
+                remarks varchar NULL);""".format(new_table))
+                conn.commit()
+                conn.close()
+            except psycopg2.Error as e:
+                print(e)
+        else:
+            pass
+
+### Preparation
 
 #loading data
 df = pd.read_csv('couplb.csv', usecols=[0,1,2,3,4])
@@ -51,7 +86,8 @@ list = df[(df['Species'].isin(species)) & (df['Location'].isin(locations))]
 
 
 
-#Functions
+### Functions
+
 #Rerun
 def rerun():
     raise st.script_runner.RerunException(st.script_request_queue.RerunData(None))
@@ -93,7 +129,11 @@ def record(date, name,present,injure,remarks,feeder):
         'status':injure,
         'remarks':remarks,
         'feeder':feeder}
-    return records
+    conn = init_connection()
+    with conn.cursor() as cur:
+        cur.execute("""INSERT INTO public.record_novdec("Timestamp","Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
+        conn.commit()
+        conn.close()
 
 
 #Creating the list and report form
@@ -106,15 +146,10 @@ def rows(name,date,status):
         images(name,col1)
         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if col2.button('Submit Record',key = name + '_Record',):
-            new_df=record(date, name,present,injure,remarks,feeder)
+            record(date, name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
-            with open('record.csv', 'a',newline='') as f_object:
-                dictwriter_object = DictWriter(f_object, fieldnames=['timestamp','name','attendance','status','remarks','feeder'], delimiter=',' )
-                dictwriter_object.writerow(new_df)
-                f_object.close()
             rerun()
 
-            
 
                 
 # Actual page
