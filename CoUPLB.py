@@ -155,7 +155,7 @@ def rows(clow,name,date,status):
 
                 
 # Actual page
-st.write(os.environ['USER'][0])
+st.write(os.environ['USERS'][0])
 date = st.date_input('Feeding Date')
 for index,vals in list.iterrows():
     name = vals[2]
