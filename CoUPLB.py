@@ -47,7 +47,9 @@ sp = df['Species'].unique()
 sp = np.insert(sp,0,'Cat & Dog')
 loc = df['Location'].unique()
 loc = np.insert(loc,0,'Campus View')
-
+users = os.environ['USERS'].split(",")
+pw = os.environ['PASSWORD'].split(",")
+creds = {users[i]: pw[i] for i in range(len(users))}
 
 #Page construction
 st.set_page_config(page_title="Cats of UPLB Pawttendance Tracker",page_icon='logo.png')
@@ -155,18 +157,37 @@ def rows(clow,name,date,status):
 
                 
 # Actual page
-users = os.environ['USERS'].split(",")
-pw = os.environ['PASSWORD'].split(",")
-st.write(users)
-st.write(pw)
-date = st.date_input('Feeding Date')
-for index,vals in list.iterrows():
-    name = vals[2]
-    stat = vals[4]
-    clow = vals[1]
-    record_key = name+'_'+str(date)
-    status = states(record_key)
-    rows(clow,name,date,status)
+
+if 'initializer' not in st.session_state:
+    st.session_state.initializer = False
+with st.expander('Please Login Here', expanded=not st.session_state.initializer):
+    with st.form('Login', True):
+        username = st.text_input('Feeder Name')
+        password = st.text_input('Password',type='password')
+        submitted = st.form_submit_button(label='Login')
+        if submitted:
+            validation = creds.get(username)
+            if:
+                psycopg2.connect(dbname=os.environ['DB'], host=os.environ['HOST'], user=os.environ['USERNAME'], password=os.environ['PASSWORD'])
+                st.session_state.initializer = True
+            except:
+                st.session_state.initializer = 'Blank'
+
+
+if st.session_state.initializer == False:
+    st.write()
+elif st.session_state.initializer == 'Blank':
+    st.header('Login credentials incorrect. You are not permitted to access this page.') 
+elif st.session_state.initializer == True:
+    date = st.date_input('Feeding Date')
+    for index,vals in list.iterrows():
+        clow = vals[1]
+        name = vals[2]
+        stat = vals[4]
+        record_key = name+'_'+str(date)
+        status = states(record_key)
+        rows(clow,name,date,status)
+
     
 conn = init_connection()    
 query = "SELECT * FROM public.record_1;"
