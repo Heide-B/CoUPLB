@@ -155,14 +155,18 @@ def rows(clow,name,date,status):
 
                 
 # Actual page
-st.write(os.environ['USERS'][0])
+users = os.environ['USERS'].split()
+pw = os.environ['PASSWORD'].split()
+st.write(users)
+st.write(pw)
 date = st.date_input('Feeding Date')
 for index,vals in list.iterrows():
     name = vals[2]
     stat = vals[4]
+    clow = vals[1]
     record_key = name+'_'+str(date)
     status = states(record_key)
-    rows(name,date,status)
+    rows(clow,name,date,status)
     
 conn = init_connection()    
 query = "SELECT * FROM public.record_1;"
