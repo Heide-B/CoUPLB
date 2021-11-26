@@ -11,33 +11,33 @@ def init_connection():
     DATABASE_URL = os.environ['DATABASE_URL']
     return psycopg2.connect(DATABASE_URL, sslmode='require')
 
-def checking():
-    with conn.cursor() as cur:
-        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE';")
-        rows = cur.rowcount
-        res = cur.fetchall()
-        print(rows)
-        print(res)
-        if rows >= 9990:
-            try:
-                current_table = res[-1][-1]
-                x = current_table
-                i = x.split("_")
-                new_table = i[0]+'_'+str(int(i[-1]) + 1)
-                cur.execute(
-                """CREATE TABLE public.{0} (
-                "Timestamp" date NOT NULL, -- Date of the recorded feeding
-                "Name" varchar NOT NULL, -- Name of the animal being recorded
-                attendance varchar NOT NULL, -- Absent, Present, Fostered
-                status varchar NOT NULL, -- Healthy, Injured, Sick
-                feeder varchar NULL, -- Feeder assigned
-                remarks varchar NULL);""".format(new_table))
-                conn.commit()
-                conn.close()
-            except psycopg2.Error as e:
-                print(e)
-        else:
-            pass
+# def checking():
+#     with conn.cursor() as cur:
+#         cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE';")
+#         rows = cur.rowcount
+#         res = cur.fetchall()
+#         print(rows)
+#         print(res)
+#         if rows >= 9990:
+#             try:
+#                 current_table = res[-1][-1]
+#                 x = current_table
+#                 i = x.split("_")
+#                 new_table = i[0]+'_'+str(int(i[-1]) + 1)
+#                 cur.execute(
+#                 """CREATE TABLE public.{0} (
+#                 "Timestamp" date NOT NULL, -- Date of the recorded feeding
+#                 "Name" varchar NOT NULL, -- Name of the animal being recorded
+#                 attendance varchar NOT NULL, -- Absent, Present, Fostered
+#                 status varchar NOT NULL, -- Healthy, Injured, Sick
+#                 feeder varchar NULL, -- Feeder assigned
+#                 remarks varchar NULL);""".format(new_table))
+#                 conn.commit()
+#                 conn.close()
+#             except psycopg2.Error as e:
+#                 print(e)
+#         else:
+#             pass
 
 ### Preparation
 
@@ -122,8 +122,9 @@ def states(key):
 
 
 #Creating record dictionary
-def record(date, name,present,injure,remarks,feeder):
+def record(date,clowder,name,present,injure,remarks,feeder):
     records = {'timestamp':date,
+        'clowder':clowder,
         'name':name,
         'attendance':present,
         'status':injure,
@@ -131,13 +132,13 @@ def record(date, name,present,injure,remarks,feeder):
         'feeder':feeder}
     conn = init_connection()
     with conn.cursor() as cur:
-        cur.execute("""INSERT INTO public.record_1("Timestamp","Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
+        cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, $(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
         conn.commit()
         conn.close()
 
 
 #Creating the list and report form
-def rows(name,date,status):
+def rows(clow,name,date,status):
     with st.expander(name + ' - ' + str(status)):
         col1, col2 = st.columns([3,1])
         present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
@@ -147,6 +148,7 @@ def rows(name,date,status):
         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if col2.button('Submit Record',key = name + '_Record',):
             record(date, name,present,injure,remarks,feeder)
+            st.success('Record Submitted')
             st.session_state[record_key] = 'Visited'
             rerun()
 
@@ -160,3 +162,9 @@ for index,vals in list.iterrows():
     record_key = name+'_'+str(date)
     status = states(record_key)
     rows(name,date,status)
+    
+conn = init_connection()    
+query = "SELECT * FROM public.record_1;"
+record_df = pd.read_sql_query(query, conn)
+csv = record_df.to_csv().encode('utf-8')
+st.sidebar.download_button(label='Download Records', data=csv, file_name='CoUPLB Records.csv',mime='text/csv')
