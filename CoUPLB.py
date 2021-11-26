@@ -155,8 +155,8 @@ def rows(clow,name,date,status):
 
                 
 # Actual page
-users = os.environ['USERS'].split()
-pw = os.environ['PASSWORD'].split()
+users = os.environ['USERS'].split(",")
+pw = os.environ['PASSWORD'].split(",")
 st.write(users)
 st.write(pw)
 date = st.date_input('Feeding Date')
