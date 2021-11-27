@@ -134,7 +134,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         'feeder':feeder}
     conn = init_connection()
     with conn.cursor() as cur:
-        cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, $(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
+        cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
         conn.commit()
         conn.close()
 
