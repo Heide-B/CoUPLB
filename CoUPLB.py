@@ -149,9 +149,9 @@ def rows(clow,name,date,status,feeder):
 #         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if st.button('Submit Record',key = name + '_Record',):
             record(date,clow,name,present,injure,remarks,feeder)
-            st.balloons()
             st.session_state[record_key] = 'Visited'
             rerun()
+            st.success('Record Submitted')
         images(name)
 
 
