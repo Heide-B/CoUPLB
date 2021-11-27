@@ -137,18 +137,18 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
         conn.commit()
         conn.close()
-    st.balloons()
 
 
 #Creating the list and report form
 def rows(clow,name,date,status,feeder):
     with st.expander(name + ' - ' + str(status)):
-#         col1, col2 = st.columns([3,1])
-        present = st.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
-        injure = st.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
-        remarks = st.text_input('Remarks', key = name + '_Remarks')
+        col1, col2 = st.columns([3,1])
+        present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
+        injure = col1.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
+        remarks = col1.text_input('Remarks', key = name + '_Remarks')
 #         feeder = col2.text_input('Feeder', key = name + '_Feeder')
-        if st.button('Submit Record',key = name + '_Record',):
+        if col2.button('Submit Record',key = name + '_Record',):
+            col2.success('Record Submitted')
             record(date,clow,name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
             rerun()
