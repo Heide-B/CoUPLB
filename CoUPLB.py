@@ -167,7 +167,7 @@ with st.expander('Please Login Here', expanded=not st.session_state.initializer)
         submitted = st.form_submit_button(label='Login')
         if submitted:
             validation = creds.get(username)
-            if validation == passwword:
+            if validation == password:
                 st.session_state.initializer = True
                 st.balloons()
             else:
