@@ -125,7 +125,7 @@ def states(key):
 
 #Creating record dictionary
 def record(date,clowder,name,present,injure,remarks,feeder):
-    st.success('Record Submitted')
+    st.balloons()
     records = {'timestamp':date,
         'clowder':clowder,
         'name':name,
