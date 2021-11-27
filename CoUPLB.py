@@ -140,7 +140,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
 
 
 #Creating the list and report form
-def rows(clow,name,date,status):
+def rows(clow,name,date,status,feeder):
     with st.expander(name + ' - ' + str(status)):
 #         col1, col2 = st.columns([3,1])
         present = st.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
@@ -170,6 +170,7 @@ with st.expander('Please Login Here', expanded=not st.session_state.initializer)
             validation = creds.get(username)
             if validation == password:
                 st.session_state.initializer = True
+                username
             else:
                 st.session_state.initializer = 'Blank'
 
@@ -186,7 +187,7 @@ elif st.session_state.initializer == True:
         stat = vals[4]
         record_key = name+'_'+str(date)
         status = states(record_key)
-        rows(clow,name,date,status)
+        rows(clow,name,date,status, username)
 
     
 conn = init_connection()    
