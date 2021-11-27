@@ -96,12 +96,12 @@ def rerun():
     
 
 #Image loader
-def images(pet,col1):
+def images(pet):
     path = './Photos/'    
     for i in os.listdir(path):
         if i.startswith(str(pet)) and i.endswith('jpg'):
             img = path+i
-            col1.markdown(
+            st.markdown(
                 f"""
                 <div class="container">
                     <img class="logo-img" width="50%" height="50%" src="data:image/png;base64,{base64.b64encode(open(img, "rb").read()).decode()}">
@@ -142,17 +142,18 @@ def record(date,clowder,name,present,injure,remarks,feeder):
 #Creating the list and report form
 def rows(clow,name,date,status):
     with st.expander(name + ' - ' + str(status)):
-        col1, col2 = st.columns([3,1])
-        present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
-        injure = col1.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
-        remarks = col1.text_input('Remarks', key = name + '_Remarks')
-        images(name,col1)
-        feeder = col2.text_input('Feeder', key = name + '_Feeder')
-        if col2.button('Submit Record',key = name + '_Record',):
+#         col1, col2 = st.columns([3,1])
+        present = st.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
+        injure = st.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
+        remarks = st.text_input('Remarks', key = name + '_Remarks')
+#         feeder = col2.text_input('Feeder', key = name + '_Feeder')
+        if st.button('Submit Record',key = name + '_Record',):
             record(date, name,present,injure,remarks,feeder)
             st.success('Record Submitted')
+            st.balloons()
             st.session_state[record_key] = 'Visited'
             rerun()
+        images(name)
 
 
                 
@@ -169,7 +170,6 @@ with st.expander('Please Login Here', expanded=not st.session_state.initializer)
             validation = creds.get(username)
             if validation == password:
                 st.session_state.initializer = True
-                st.balloons()
             else:
                 st.session_state.initializer = 'Blank'
 
