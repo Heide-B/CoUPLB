@@ -167,10 +167,10 @@ with st.expander('Please Login Here', expanded=not st.session_state.initializer)
         submitted = st.form_submit_button(label='Login')
         if submitted:
             validation = creds.get(username)
-            if:
-                psycopg2.connect(dbname=os.environ['DB'], host=os.environ['HOST'], user=os.environ['USERNAME'], password=os.environ['PASSWORD'])
+            if validation == passwword:
                 st.session_state.initializer = True
-            except:
+                st.balloons()
+            else:
                 st.session_state.initializer = 'Blank'
 
 
