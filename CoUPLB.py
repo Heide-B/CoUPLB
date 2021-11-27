@@ -148,7 +148,7 @@ def rows(clow,name,date,status,feeder):
         remarks = st.text_input('Remarks', key = name + '_Remarks')
 #         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if st.button('Submit Record',key = name + '_Record',):
-            record(date, name,present,injure,remarks,feeder)
+            record(date,clow,name,present,injure,remarks,feeder)
             st.success('Record Submitted')
             st.balloons()
             st.session_state[record_key] = 'Visited'
@@ -170,7 +170,6 @@ with st.expander('Please Login Here', expanded=not st.session_state.initializer)
             validation = creds.get(username)
             if validation == password:
                 st.session_state.initializer = True
-                username
             else:
                 st.session_state.initializer = 'Blank'
 
@@ -187,7 +186,7 @@ elif st.session_state.initializer == True:
         stat = vals[4]
         record_key = name+'_'+str(date)
         status = states(record_key)
-        rows(clow,name,date,status, username)
+        rows(clow,name,date,status,username)
 
     
 conn = init_connection()    
