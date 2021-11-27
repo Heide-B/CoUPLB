@@ -125,6 +125,7 @@ def states(key):
 
 #Creating record dictionary
 def record(date,clowder,name,present,injure,remarks,feeder):
+    st.success('Record Submitted')
     records = {'timestamp':date,
         'clowder':clowder,
         'name':name,
@@ -151,7 +152,6 @@ def rows(clow,name,date,status,feeder):
             record(date,clow,name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
             rerun()
-            st.success('Record Submitted')
         images(name)
 
 
