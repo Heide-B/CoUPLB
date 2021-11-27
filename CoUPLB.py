@@ -148,10 +148,11 @@ def rows(clow,name,date,status,feeder):
         remarks = col1.text_input('Remarks', key = name + '_Remarks')
 #         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if col2.button('Submit Record',key = name + '_Record',):
-            col2.success('Record Submitted')
             record(date,clow,name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
             rerun()
+        if st.session_state[record_key] == 'Visited':
+            col2.success('Record Submitted')
         images(name)
 
 
