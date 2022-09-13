@@ -201,13 +201,14 @@ elif st.session_state.initializer == True:
         status = check_status(name, date)
         rows(clow,name,date,status,username)
     with st.sidebar.form('Generate Report'):
-        st.info('All available records for the currently selected species and location will be generated')
+        st.info('Generate a report for the currently selected species and location')
         generate = st.form_submit_button("Generate")
         if generate:
-            report_query = f"select 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
+            report_query = f"SELECT 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
             conn = init_connection()
             report = pd.read_sql_query(report_query, conn)
-            rep = zip(report['Name'], report['attendance'], report['status'])
+            st.write(dtype(report))
+            rep = zip(report[0]['Name'], report['attendance'], report['status'])
             message = f"""Report for {date} - {clow} clowder
                         \nby {username}
                         """
