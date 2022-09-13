@@ -139,7 +139,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         conn.commit()
         conn.close()
 
-def check_status(name, time)
+def check_status(name, time):
     query = f"select COUNT(*) from public.record_1 where "Name" = '{name}' and "Timestamp" = '{time}';"
     conn = init_connection()
     with conn.cursor() as cur:
