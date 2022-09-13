@@ -155,7 +155,7 @@ def check_status(name, time, key):
 
 #Creating the list and report form
 def rows(clow,name,date,status,feeder, record_key):
-    with st.expander(name + ' - ' + str(status)):
+    with st.expander(name + ' - ' + str(st.session_state[record_key])):
         col1, col2 = st.columns([3,1])
         present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
         injure = col1.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
@@ -206,7 +206,7 @@ elif st.session_state.initializer == True:
         st.info('Generate a report for the currently selected species and location')
         generate = st.form_submit_button("Generate")
         if generate:
-            report_query = f"SELECT 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
+            report_query = f"SELECT * FROM public.record_1 WHERE 'Timestamp' = '{date}';"
             conn = init_connection()
             report = pd.read_sql_query(report_query, conn)
             st.dataframe(report)
