@@ -147,7 +147,7 @@ def check_status(name, time):
         count = cur.fetchone()
         conn.commit()
         conn.close()
-    if int(count) > 0:
+    if count[0] > 0:
         status = 'Visited'
     else:
         status = 'Not Visisted'
