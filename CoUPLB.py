@@ -208,7 +208,7 @@ query = "SELECT * FROM public.record_1;"
 record_df = pd.read_sql_query(query, conn)
 csv = record_df.to_csv().encode('utf-8')
 st.sidebar.download_button(label='Download Records', data=csv, file_name='CoUPLB Records.csv',mime='text/csv')
-with st.form('Generate Report'):
+with st.sidebar.form('Generate Report'):
     st.info('All available records for the currently selected species and location will be generated')
     q = f"select 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
     st.text_area(f"""Report for {date} - {clow} clowder
