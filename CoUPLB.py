@@ -154,7 +154,7 @@ def check_status(name, time, key):
     return status
 
 #Creating the list and report form
-def rows(clow,name,date,status,feeder):
+def rows(clow,name,date,status,feeder, record_key):
     with st.expander(name + ' - ' + str(status)):
         col1, col2 = st.columns([3,1])
         present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
@@ -201,7 +201,7 @@ elif st.session_state.initializer == True:
         record_key = name+'_'+str(date)
         states(record_key)
         status = check_status(name, date, record_key)
-        rows(clow,name,date,status,username)
+        rows(clow,name,date,status,username, record_key)
     with st.sidebar.form('Generate Report'):
         st.info('Generate a report for the currently selected species and location')
         generate = st.form_submit_button("Generate")
@@ -209,9 +209,8 @@ elif st.session_state.initializer == True:
             report_query = f"SELECT 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
             conn = init_connection()
             report = pd.read_sql_query(report_query, conn)
-            st.dataframe(report[0])
             st.dataframe(report)
-            rep = zip(report[0]['Name'], report['attendance'], report['status'])
+            rep = zip(report['Name'], report['attendance'], report['status'])
             message = f"""Report for {date} - {clow} clowder
                         \nby {username}
                         """
