@@ -209,7 +209,7 @@ elif st.session_state.initializer == True:
             report_query = f"SELECT 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
             conn = init_connection()
             report = pd.read_sql_query(report_query, conn)
-            st.write(dtype(report))
+            st.write(type(report))
             rep = zip(report[0]['Name'], report['attendance'], report['status'])
             message = f"""Report for {date} - {clow} clowder
                         \nby {username}
