@@ -51,6 +51,7 @@ users = os.environ['USERS'].split(",")
 pw = os.environ['PASSWORD'].split(",")
 creds = {users[i]: pw[i] for i in range(len(users))}
 
+
 #Page construction
 st.set_page_config(page_title="Cats of UPLB Pawttendance Tracker",page_icon='logo.png')
 st.title("Cats of UPLB\n Pawttendance Tracker")
@@ -138,6 +139,19 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         conn.commit()
         conn.close()
 
+def check_status(name, time)
+    query = f"select COUNT(*) from public.record_1 where "Name" = '{name}' and "Timestamp" = '{time}';"
+    conn = init_connection()
+    with conn.cursor() as cur:
+        cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
+        count, _ = cur.fetchone()
+        conn.commit()
+        conn.close()
+    if count > 0:
+        status = 'Visited'
+    else:
+        status = 'Not Visisted'
+    return status
 
 #Creating the list and report form
 def rows(clow,name,date,status,feeder):
@@ -185,11 +199,11 @@ elif st.session_state.initializer == True:
         name = vals[2]
         stat = vals[4]
         record_key = name+'_'+str(date)
-        status = states(record_key)
+        status = check_status(name, date)
         rows(clow,name,date,status,username)
 
     
-conn = init_connection()    
+    
 query = "SELECT * FROM public.record_1;"
 record_df = pd.read_sql_query(query, conn)
 csv = record_df.to_csv().encode('utf-8')
