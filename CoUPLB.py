@@ -121,8 +121,6 @@ def states(key):
         Status = st.session_state[key]
     else:
         Status = 'Visited'
-    return Status
-
 
 #Creating record dictionary
 def record(date,clowder,name,present,injure,remarks,feeder):
@@ -199,6 +197,7 @@ elif st.session_state.initializer == True:
         name = vals[2]
         stat = vals[4]
         record_key = name+'_'+str(date)
+        states(record_key)
         status = check_status(name, date)
         rows(clow,name,date,status,username)
     with st.sidebar.form('Generate Report'):
