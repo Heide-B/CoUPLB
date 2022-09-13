@@ -201,16 +201,26 @@ elif st.session_state.initializer == True:
         record_key = name+'_'+str(date)
         status = check_status(name, date)
         rows(clow,name,date,status,username)
-
+    with st.sidebar.form('Generate Report'):
+        st.info('All available records for the currently selected species and location will be generated')
+        generate = st.form_submit_button("Generate")
+        if generate:
+            report_query = f"select 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
+            conn = init_connection()
+            report = pd.read_sql_query(report_query, conn)
+            rep = zip(report['Name'], report['attendance'], report['status'])
+            message = f"""Report for {date} - {clow} clowder
+                        \nby {username}
+                        """
+            for n, a, s in rep:
+                message += f"""\n{n} - {a}
+                                \n{s}
+                                \n
+                            """
+            st.text_area(message, disabled=True)
     
 conn = init_connection()
 query = "SELECT * FROM public.record_1;"
 record_df = pd.read_sql_query(query, conn)
 csv = record_df.to_csv().encode('utf-8')
 st.sidebar.download_button(label='Download Records', data=csv, file_name='CoUPLB Records.csv',mime='text/csv')
-with st.sidebar.form('Generate Report'):
-    st.info('All available records for the currently selected species and location will be generated')
-    q = f"select 'Name', 'attendance', 'status' FROM public.record_1 WHERE 'Timestamp' = '{date}';"
-    st.text_area(f"""Report for {date} - {clow} clowder
-                \nby {username}
-                """, disabled=True)
