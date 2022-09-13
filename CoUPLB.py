@@ -219,7 +219,7 @@ elif st.session_state.initializer == True:
                                 \n{s}
                                 \n
                             """
-            st.text_area(message, disabled=True)
+            st.markdown(message, unsafe_allow_html=True)
     
 conn = init_connection()
 query = "SELECT * FROM public.record_1;"
