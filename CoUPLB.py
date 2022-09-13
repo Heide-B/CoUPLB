@@ -144,10 +144,10 @@ def check_status(name, time):
     conn = init_connection()
     with conn.cursor() as cur:
         cur.execute(query)
-        count, _ = cur.fetchone()
+        count = cur.fetchone()
         conn.commit()
         conn.close()
-    if count > 0:
+    if int(count) > 0:
         status = 'Visited'
     else:
         status = 'Not Visisted'
