@@ -137,7 +137,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         conn.commit()
         conn.close()
 
-def check_status(name, time):
+def check_status(name, time, key):
     query = f"select COUNT(*) from public.record_1 where 'Name' = '{name}' and 'Timestamp' = '{time}';"
     conn = init_connection()
     with conn.cursor() as cur:
@@ -147,8 +147,10 @@ def check_status(name, time):
         conn.close()
     if count[0] > 0:
         status = 'Visited'
+        st.session_state[key] = 'Visited'
     else:
         status = 'Not Visisted'
+        st.session_state[key] = 'Not Visited'
     return status
 
 #Creating the list and report form
@@ -198,7 +200,7 @@ elif st.session_state.initializer == True:
         stat = vals[4]
         record_key = name+'_'+str(date)
         states(record_key)
-        status = check_status(name, date)
+        status = check_status(name, date, record_key)
         rows(clow,name,date,status,username)
     with st.sidebar.form('Generate Report'):
         st.info('Generate a report for the currently selected species and location')
