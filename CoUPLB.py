@@ -140,7 +140,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         conn.close()
 
 def check_status(name, time):
-    query = f"select COUNT(*) from public.record_1 where "Name" = '{name}' and "Timestamp" = '{time}';"
+    query = f"select COUNT(*) from public.record_1 where 'Name' = '{name}' and 'Timestamp' = '{time}';"
     conn = init_connection()
     with conn.cursor() as cur:
         cur.execute("""INSERT INTO public.record_1("Timestamp",clowder,"Name",attendance,status,feeder,remarks) VALUES (%(timestamp)s, %(clowder)s, %(name)s, %(attendance)s, %(status)s, %(feeder)s, %(remarks)s)""", records)
