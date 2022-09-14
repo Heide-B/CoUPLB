@@ -171,7 +171,7 @@ def rows(clow,name,date,status,feeder, record_key):
 
 
 def clowder_row(date, feeder, lists):
-    clow = lists['Location'][0]
+    clow = lists['Location']
     record_key = f'entire_clow_{clow}'
     with st.expander(f"Report for entire {clow}"):
         present = st.multiselect('Present furbabies', lists['Name'])
