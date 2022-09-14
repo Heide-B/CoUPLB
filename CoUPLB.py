@@ -212,7 +212,7 @@ elif st.session_state.initializer == True:
     tab1, tab2, tab3 = st.tabs(["Tracking", "Animal Overview", "TBD"])
     with tab1:
         date = st.date_input('Feeding Date')
-        clowder_row(date, username, lists):
+        clowder_row(date, username, lists)
         for index, vals in lists.iterrows():
             clow = vals[1]
             name = vals[2]
