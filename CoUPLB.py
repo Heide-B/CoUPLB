@@ -138,7 +138,7 @@ def record(date,clowder,name,present,injure,remarks,feeder):
         conn.close()
 
 def check_status(name, time, key):
-    query = f"select COUNT(*) from public.record_1 where 'Name' = '{name}' and 'Timestamp' = '{time}';"
+    query = f"SELECT COUNT(*) from public.record_1 where 'Name' = '{name}' and 'Timestamp' = '{time}';"
     conn = init_connection()
     with conn.cursor() as cur:
         cur.execute(query)
@@ -206,7 +206,7 @@ elif st.session_state.initializer == True:
         st.info('Generate a report for the currently selected species and location')
         generate = st.form_submit_button("Generate")
         if generate:
-            report_query = f"SELECT * FROM public.record_1 WHERE 'Timestamp' = '{date}';"
+            report_query = f'SELECT * FROM public.record_1 WHERE "Timestamp" = "{date}";'
             conn = init_connection()
             with conn.cursor() as cur:
                 cur.execute(report_query)
@@ -216,9 +216,10 @@ elif st.session_state.initializer == True:
             #report = pd.read_sql_query(report_query, conn)
             #st.dataframe(report)
             #rep = zip(report['Name'], report['attendance'], report['status'])
-            message = f"""Report for {date} - {clow} clowder
+            message = f"""Feeding Report for {date} - {clow} clowder
                         \nby {username}
                         """
+            st.write(reps)
             for items in reps:
                 message += f"""\n{items[1]} - {items[2]}
                                 \n{items[3]}
