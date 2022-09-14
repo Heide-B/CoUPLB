@@ -208,15 +208,21 @@ elif st.session_state.initializer == True:
         if generate:
             report_query = f"SELECT * FROM public.record_1 WHERE 'Timestamp' = '{date}';"
             conn = init_connection()
-            report = pd.read_sql_query(report_query, conn)
-            st.dataframe(report)
-            rep = zip(report['Name'], report['attendance'], report['status'])
+            with conn.cursor() as cur:
+                cur.execute(report_query)
+                reps = cur.fetchall()
+                conn.commit()
+                conn.close()            
+            #report = pd.read_sql_query(report_query, conn)
+            #st.dataframe(report)
+            #rep = zip(report['Name'], report['attendance'], report['status'])
             message = f"""Report for {date} - {clow} clowder
                         \nby {username}
                         """
-            for n, a, s in rep:
-                message += f"""\n{n} - {a}
-                                \n{s}
+            for items in reps:
+                message += f"""\n{items[1]} - {items[2]}
+                                \n{items[3]}
+                                \n{items[5]}
                                 \n
                             """
             st.markdown(message, unsafe_allow_html=True)
