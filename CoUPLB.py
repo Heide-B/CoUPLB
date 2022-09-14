@@ -193,41 +193,42 @@ if st.session_state.initializer == False:
 elif st.session_state.initializer == 'Blank':
     st.header('Login credentials incorrect. You are not permitted to access this page.') 
 elif st.session_state.initializer == True:
-    date = st.date_input('Feeding Date')
-    for index,vals in list.iterrows():
-        clow = vals[1]
-        name = vals[2]
-        stat = vals[4]
-        record_key = name+'_'+str(date)
-        states(record_key)
-        status = check_status(name, date, record_key)
-        rows(clow,name,date,status,username, record_key)
-    with st.sidebar.form('Generate Report'):
-        st.info('Generate a report for the currently selected species and location')
-        generate = st.form_submit_button("Generate")
-        if generate:
-            report_query = f'SELECT * FROM public.record_1 WHERE "Timestamp" = \'{date}\';'
-            conn = init_connection()
-            with conn.cursor() as cur:
-                cur.execute(report_query)
-                reps = cur.fetchall()
-                conn.commit()
-                conn.close()            
-            #report = pd.read_sql_query(report_query, conn)
-            #st.dataframe(report)
-            #rep = zip(report['Name'], report['attendance'], report['status'])
-            message = f"""Feeding Report for {date} - {clow} clowder
-                        \nby {username}
-                        """
-            st.write(reps)
-            for items in reps:
-                message += f"""\n{items[1]} - {items[2]}
-                                \n{items[3]}
-                                \n{items[5]}
-                                \n
+    tab1, tab2, tab3 = st.tabs(["Tracking", "Animal Overview", "TBD"])
+    with tab1:
+        date = st.date_input('Feeding Date')
+        for index,vals in list.iterrows():
+            clow = vals[1]
+            name = vals[2]
+            stat = vals[4]
+            record_key = name+'_'+str(date)
+            states(record_key)
+            status = check_status(name, date, record_key)
+            rows(clow,name,date,status,username, record_key)
+        with st.sidebar.form('Generate Report'):
+            st.info('Generate a report for the currently selected species and location')
+            generate = st.form_submit_button("Generate")
+            if generate:
+                report_query = f'SELECT * FROM public.record_1 WHERE "Timestamp" = \'{date}\';'
+                conn = init_connection()
+                with conn.cursor() as cur:
+                    cur.execute(report_query)
+                    reps = cur.fetchall()
+                    conn.commit()
+                    conn.close()            
+                message = f"""Feeding Report for {date} - {clow} clowder
+                            \nby {username}
                             """
-            st.markdown(message, unsafe_allow_html=True)
-    
+                for items in reps:
+                    message += f"""\n{items[1]} - {items[2]}
+                                    <br>{items[3]}. Remarks: {items[5]}
+                                    \n
+                                """
+                st.markdown(message, unsafe_allow_html=True)
+                
+                
+    with tab2:
+        st.write('Feature coming soon')
+        
 conn = init_connection()
 query = "SELECT * FROM public.record_1;"
 record_df = pd.read_sql_query(query, conn)
