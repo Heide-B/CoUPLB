@@ -178,14 +178,14 @@ def clowder_row(date, feeder, lists):
         absent = st.multiselect('Absent furbabies', lists['Name'])
 
         if st.button('Submit Record', key = record_key):
-        if len(present) > 0:
-            for name in present:
-                record(date,clow,name,present='Present',injure="Healthy",remarks="No remarks",feeder)
-        if len(absent) > 0:
-            for name in present:
-                record(date,clow,name,present='Absent',injure="Healthy",remarks="No remarks",feeder)
-            st..success('Records Submitted')
-            rerun()
+            if len(present) > 0:
+                for name in present:
+                    record(date=date,clowder=clow,name=name,present='Present',injure="Healthy",remarks="No remarks",feeder=feeder)
+            if len(absent) > 0:
+                for name in present:
+                    record(date=date,clowder=clow,name=name,present='Absent',injure="Healthy",remarks="No remarks",feeder=feeder)
+                st.success('Records Submitted')
+                rerun()
                 
 # Actual page
 
