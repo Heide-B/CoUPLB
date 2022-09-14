@@ -193,8 +193,8 @@ if st.session_state.initializer == False:
 elif st.session_state.initializer == 'Blank':
     st.header('Login credentials incorrect. You are not permitted to access this page.') 
 elif st.session_state.initializer == True:
-    choice = st.radio(label='', options=["Tracking", "Animal Overview", "TBD"], horizontal=True)
-    if choice == 'Tracking':
+    tab1, tab2, tab3 = st.tabs(["Tracking", "Animal Overview", "TBD"])
+    with tab1:
         date = st.date_input('Feeding Date')
         for index,vals in list.iterrows():
             clow = vals[1]
@@ -225,13 +225,12 @@ elif st.session_state.initializer == True:
                                 """
                 st.markdown(message, unsafe_allow_html=True)
                 
-                
-    elif choice == 'Animal Overview':
+    with tab2:
         st.write('Feature coming soon')
-    elif choice == 'TBD':
+    with tab3:
         st.write('Feature coming soon')
 
-        
+
 conn = init_connection()
 query = "SELECT * FROM public.record_1;"
 record_df = pd.read_sql_query(query, conn)
