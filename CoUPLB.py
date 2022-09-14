@@ -163,7 +163,7 @@ def rows(clow,name,date,status,feeder, record_key):
         if col2.button('Submit Record',key = name + '_Record',):
             record(date,clow,name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
-            rerun()
+
         if st.session_state[record_key] == 'Visited':
             col2.success('Record Submitted')
         images(name)
@@ -185,7 +185,6 @@ def clowder_row(date, feeder, lists):
                 for name in present:
                     record(date=date,clowder=clow,name=name,present='Absent',injure="Healthy",remarks="No remarks",feeder=feeder)
                 st.success('Records Submitted')
-                rerun()
                 
 # Actual page
 
