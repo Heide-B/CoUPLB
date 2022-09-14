@@ -85,7 +85,7 @@ if 'Campus View' in locations:
     locations.clear()
     locations = loc
     
-list = df[(df['Species'].isin(species)) & (df['Location'].isin(locations))]
+lists = df[(df['Species'].isin(species)) & (df['Location'].isin(locations))]
 
 
 
@@ -160,7 +160,6 @@ def rows(clow,name,date,status,feeder, record_key):
         present = col1.selectbox('Attendance',['Absent','Present','Fostered'], key = name + '_Present')
         injure = col1.selectbox('Status',['Healthy','Injured','Sick'], key = name + '_Injured')
         remarks = col1.text_input('Remarks', key = name + '_Remarks')
-#         feeder = col2.text_input('Feeder', key = name + '_Feeder')
         if col2.button('Submit Record',key = name + '_Record',):
             record(date,clow,name,present,injure,remarks,feeder)
             st.session_state[record_key] = 'Visited'
@@ -170,6 +169,23 @@ def rows(clow,name,date,status,feeder, record_key):
         images(name)
 
 
+
+def clowder_row(date, feeder, lists):
+    clow = lists['Location'][0]
+    record_key = f'entire_clow_{clow}'
+    with st.expander(f"Report for entire {clow}"):
+        present = st.multiselect('Present furbabies', lists['Name'])
+        absent = st.multiselect('Absent furbabies', lists['Name'])
+
+        if st.button('Submit Record', key = record_key):
+        if len(present) > 0:
+            for name in present:
+                record(date,clow,name,present='Present',injure="Healthy",remarks="No remarks",feeder)
+        if len(absent) > 0:
+            for name in present:
+                record(date,clow,name,present='Absent',injure="Healthy",remarks="No remarks",feeder)
+            st..success('Records Submitted')
+            rerun()
                 
 # Actual page
 
@@ -196,7 +212,8 @@ elif st.session_state.initializer == True:
     tab1, tab2, tab3 = st.tabs(["Tracking", "Animal Overview", "TBD"])
     with tab1:
         date = st.date_input('Feeding Date')
-        for index,vals in list.iterrows():
+        clowder_row(date, username, lists):
+        for index, vals in lists.iterrows():
             clow = vals[1]
             name = vals[2]
             stat = vals[4]
