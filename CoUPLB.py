@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from csv import DictWriter
+import pendulum
+import datetime
+import matplotlib
 import psycopg2
 import base64
 import os
@@ -45,8 +47,8 @@ def init_connection():
 df = pd.read_csv('couplb.csv', usecols=[0,1,2,3,4])
 sp = df['Species'].unique()
 sp = np.insert(sp,0,'Cat & Dog')
-loc = df['Location'].unique()
-loc = np.insert(loc,0,'Campus View')
+clows = df['Location'].unique()
+loc = np.insert(clows,0,'Campus View')
 users = os.environ['USERS'].split(",")
 pw = os.environ['PASSWORD'].split(",")
 creds = {users[i]: pw[i] for i in range(len(users))}
@@ -89,12 +91,7 @@ lists = df[(df['Species'].isin(species)) & (df['Location'].isin(locations))]
 
 
 
-### Functions
-
-#Rerun
-def rerun():
-    raise st.script_runner.RerunException(st.script_request_queue.RerunData(None))
-    
+### Functions    
 
 #Image loader
 def images(pet):
@@ -116,11 +113,8 @@ def images(pet):
 def states(key):
     if key not in st.session_state:
         st.session_state[key] = 'Not Visited'
-        Status = st.session_state[key]
-    elif st.session_state[key] == 'Not Visited':
-        Status = st.session_state[key]
     else:
-        Status = 'Visited'
+        st.session_state[key] = 'Not Visited'
 
 #Creating record dictionary
 def record(date,clowder,name,present,injure,remarks,feeder):
@@ -185,7 +179,44 @@ def clowder_row(date, feeder, lists):
                 for name in present:
                     record(date=date,clowder=clow,name=name,present='Absent',injure="Healthy",remarks="No remarks",feeder=feeder)
                 st.success('Records Submitted')
+            
                 
+def check_sched(conn, start, end):
+    query = f"SELECT * FROM public.record_1 WHERE \"Timestamp\" between '{start}' AND '{end}';"
+    df = pd.read_sql_query(query, conn)
+    
+    sched = pd.DataFrame()
+    for _, date in week.items():
+        for clow in clows:
+            if date in df.Timestamp.unique() and clow in df.clowder.unique():
+                sched.at[clow, date] = df.feeder.values[0]
+            else:
+                sched.at[clow, date] = 'unassigned'
+    return sched
+
+def req_sched(req_clowder, req_date, username, conn):
+    with conn.cursor() as cur:
+        for i in req_clowder:
+            records = {'req_date':req_date,
+                       'i':i,
+                       submitted:'submitted',
+                       'username':username}
+            cur.execute("""INSERT INTO public.feeders("Timestamp",clowder,status,feeder) VALUES (%(req_date)s, %(i)s, %(submitted)s, %(username)s)""", records)
+            conn.commit()
+            conn.close()
+
+def color_sched(df):
+    fs = pd.unique(sched.values.ravel()).tolist()
+    fs.remove('unassigned')
+    
+    colors = dict(zip(fs,
+                  (f'background-color: {c}' for c in matplotlib.colors.cnames.values())))
+    colors['unassigned'] = 'background-color: gray'
+    for name, value in colors.items():
+        if value == 'background-color: #000000':
+            colors[name] = 'background-color: #FFFFFF'
+    return colors
+
 # Actual page
 
 if 'initializer' not in st.session_state:
@@ -242,7 +273,28 @@ elif st.session_state.initializer == True:
                 st.markdown(message, unsafe_allow_html=True)
                 
     with tab2:
-        st.write('Feature coming soon')
+        today = pendulum.now()
+        start = today.start_of('week').strftime('%Y-%m-%d')
+        end = today.end_of('week').strftime('%Y-%m-%d')
+        st.header(f'Showing Feeding Sched for week {start}')
+        week = {'day1':0,'day2':1,'day3':2,'day4':3,'day5':4,'day6':5,'day7':6}
+        
+        for day, num in week.items():
+            week[day] = datetime.datetime.strptime(start, '%Y-%m-%d') + datetime.timedelta(days=num)
+            week[day] = week[day].strftime('%Y-%m-%d')
+        conn = init_connection()
+        with st.expander('Apply for schedule'):
+            with st.form('Application'):
+                req_clowder = st.multiselect('Clowders', clows)
+                req_date = st.date_input('Feeding date')
+            submitted = st.form_submit_button("Submit")
+            if submitted:
+                req_sched(req_clowder, req_date, username, conn)
+
+        sched = check_sched(conn, start, end)
+        colors = color_sched(sched)
+        st.dataframe(sched.style.applymap(colors.get))
+        
     with tab3:
         st.write('Feature coming soon')
 
