@@ -199,7 +199,7 @@ def req_sched(req_clowder, req_date, username, conn):
         for i in req_clowder:
             records = {'req_date':req_date,
                        'i':i,
-                       submitted:'submitted',
+                       'submitted':'submitted',
                        'username':username}
             cur.execute("""INSERT INTO public.feeders("Timestamp",clowder,status,feeder) VALUES (%(req_date)s, %(i)s, %(submitted)s, %(username)s)""", records)
             conn.commit()
