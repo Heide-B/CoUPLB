@@ -181,20 +181,25 @@ def clowder_row(date, feeder, lists):
                 st.success('Records Submitted')
             
                 
-def check_sched(conn, start, end):
-    query = f"SELECT * FROM public.record_1 WHERE \"Timestamp\" between '{start}' AND '{end}';"
+def check_sched(conn, clowders, start, end):
+    query = f"SELECT * FROM public.feeders WHERE \"Timestamp\" between '{start}' AND '{end}';"
     df = pd.read_sql_query(query, conn)
     
     sched = pd.DataFrame()
     for _, date in week.items():
-        for clow in clows:
+        for clow in clowders:
             if date in df.Timestamp.unique() and clow in df.clowder.unique():
-                sched.at[clow, date] = df.feeder.values[0]
+                data = df[(df['Timestamp'] == date) & (df['clowder'] == clow)].feeder.values
+                if len(data) > 0:
+                    sched.loc[clow, date] = data[0]
+                else:
+                    sched.at[clow, date] = 'unassigned'
             else:
                 sched.at[clow, date] = 'unassigned'
     return sched
 
-def req_sched(req_clowder, req_date, username, conn):
+def req_sched(req_clowder, req_date, username):
+    conn = init_connection()
     with conn.cursor() as cur:
         for i in req_clowder:
             records = {'req_date':req_date,
@@ -289,9 +294,9 @@ elif st.session_state.initializer == True:
                 req_date = st.date_input('Feeding date')
                 submitted = st.form_submit_button("Submit")
                 if submitted:
-                    req_sched(req_clowder, req_date, username, conn)
+                    req_sched(req_clowder, req_date, username)
 
-        sched = check_sched(conn, start, end)
+        sched = check_sched(conn, clows, start, end)
         colors = color_sched(sched)
         st.dataframe(sched.style.applymap(colors.get))
         
