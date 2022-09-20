@@ -239,7 +239,7 @@ if st.session_state.initializer == False:
 elif st.session_state.initializer == 'Blank':
     st.header('Login credentials incorrect. You are not permitted to access this page.') 
 elif st.session_state.initializer == True:
-    tab1, tab2, tab3 = st.tabs(["Tracking", "Animal Overview", "TBD"])
+    tab1, tab2, tab3 = st.tabs(["Tracking", "Attendance Tracker", "TBD"])
     with tab1:
         date = st.date_input('Feeding Date')
         clowder_row(date, username, lists)
@@ -287,9 +287,9 @@ elif st.session_state.initializer == True:
             with st.form('Application'):
                 req_clowder = st.multiselect('Clowders', clows)
                 req_date = st.date_input('Feeding date')
-            submitted = st.form_submit_button("Submit")
-            if submitted:
-                req_sched(req_clowder, req_date, username, conn)
+                submitted = st.form_submit_button("Submit")
+                if submitted:
+                    req_sched(req_clowder, req_date, username, conn)
 
         sched = check_sched(conn, start, end)
         colors = color_sched(sched)
