@@ -203,7 +203,7 @@ def req_sched(req_clowder, req_date, username, conn):
                        'username':username}
             cur.execute("""INSERT INTO public.feeders("Timestamp",clowder,status,feeder) VALUES (%(req_date)s, %(i)s, %(submitted)s, %(username)s)""", records)
             conn.commit()
-            conn.close()
+        conn.close()
 
 def color_sched(df):
     fs = pd.unique(sched.values.ravel()).tolist()
